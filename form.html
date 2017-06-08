@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Cavia Magna - Form</title>
+    <!-- Add any other metadata here -->
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+  </head>
+  <body>
+    <!-- Add here all content exposed to the user -->
+    <h1>Cavia Magna<h1>
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/form.html">Form</a></li>
+    </ul>
+
+    <h3 class="fwb">Fill out the form below</h3>
+    <p class="required">All fields are required.</p>
+
+    <div id="error-message"></div>
+
+    <form id="download_requests_form" name="download_requests_form" action="/cs/user/create/download_requests" method="post" role="form">
+      <input type="hidden" name="x-template" value="download_request.form" />
+      <input type="hidden" name="x-buttonalias" value="Get Your Free Ebook:submit" />
+      <input type="hidden" name="x-redirect" value="" />
+      <input type="hidden" name="x-tb" value="download_requests" />
+      <input type="hidden" name="product" value="{cs.r.title}" />
+      <input type="hidden" name="b_id" value="{cs.r.cs_rid}" />
+
+      <label for="first">First name</label>
+      <input type="text" id="first" name="first" aria-required="true" />
+
+      <label for="last">Last name</label>
+      <input type="text" id="last" name="last" aria-required="true" />
+
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" aria-required="true" />
+
+      <div class="newsletter-signup">
+        <input type="checkbox" id="newsletter" name="newsletter" checked value="" /><label for="newsletter"></label>
+      </div>
+
+      <button type="submit" id="x_a" name="x-a" value="Get Your Free Ebook" class="btn" onclick="return verif();">Get the free ebook</button>
+    </form>
+
+
+  </body>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+
+
+  <script type="text/javascript">
+
+  function parseParams(name) {
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");  
+    var regexS = "[\\?&]"+name+"=([^&#]*)";  
+    var regex = new RegExp( regexS );  
+    var results = regex.exec( window.location.href ); 
+    if (results === null) { return "";  }
+    else { return results[1]; }
+  }
+  if (parseParams('download') === 'true') {
+    document.getElementsByTagName('body')[0].className+=" download";
+  }
+
+  jQuery(document).ready(function ($) {
+    // set value of redirect url in signup form
+    var downloadURL = (window.location.href.split('?')[0] + "?download=true");
+    $('input[name="x-redirect"]').val(downloadURL);
+
+    var newsletter = "{cs.var.newsletter}";
+    var pa = "{cs.var.pa}";
+    var newsletterValue;
+    if (newsletter === "no") {
+      $('.newsletter-signup').remove();
+    } else if (newsletter === "yes" || newsletter === false) {
+      newsletterValue = pa;
+    } else {
+      newsletterValue = newsletter;
+    }
+    var newsletterField;
+    var newsletterLabel;
+
+      switch (newsletterValue) {
+
+        case 'ai':
+          newsletterField = "nl_ai";
+          newsletterLabel = "Artifical Intelligence";
+          newsletterTracking = "ai";
+          break;
+
+        case 'business':
+          newsletterField = "nl_economy";
+          newsletterLabel = "Next:Economy";
+          newsletterTracking = "economy";
+          break;
+
+        case 'data':
+          newsletterField = "nl_data";
+          newsletterLabel = "Data";
+          newsletterTracking = "data";
+          break;
+
+        case 'design':
+          newsletterField = "nl_design";
+          newsletterLabel = "Design";
+          newsletterTracking = "design";
+          break;
+
+        case 'operations':
+          newsletterField = "nl_webops_perf";
+          newsletterLabel = "Web Ops &amp; Performance";
+          newsletterTracking = "webops_perf";
+          break;
+
+        case 'security':
+          newsletterField = "nl_security";
+          newsletterLabel = "Security";
+          newsletterTracking = "security";
+          break;
+
+        case 'software-engineering':
+          newsletterField = "nl_prog";
+          newsletterLabel = "Programming";
+          newsletterTracking = "prog";
+          break;
+
+        case 'web-programming':
+          newsletterField = "nl_web";
+          newsletterLabel = "Web";
+          newsletterTracking = "web";
+          break;
+
+        default:
+          $('.newsletter-signup').remove();
+
+      }
+
+      $('.newsletter-signup input:checkbox').attr("value",newsletterField);
+      $('.newsletter-signup label').append('Subscribe to the O&rsquo;Reilly '+newsletterLabel+' Newsletter');
+  });
+
+
+  var sendEmail = "{cs.var.pa}";
+  var newsletterTracking = "";
+
+  function verif() {
+    $(".error").removeClass("error").attr("aria-invalid","false");
+    var downloadForm = document.getElementById('download_requests_form');
+    var errors = [];
+    var mail = new RegExp("@+","g");
+    if (downloadForm.first.value.length < 1) {
+      errors.push('first name'); 
+      $('#first').addClass("error").attr("aria-invalid","true");
+    }
+    if (downloadForm.last.value.length < 1) {
+      errors.push('last name');
+      $('#last').addClass("error").attr("aria-invalid","true");
+    }
+    if ((downloadForm.email.value.length < 1) || (!mail.test(downloadForm.email.value))) {
+      errors.push('valid email'); 
+      $('#email').addClass("error").attr("aria-invalid","true");
+
+    }
+    
+    if (errors.length > 0) {
+      var errorMessage = '';
+
+      if (errors.length > 3) {
+        errorMessage = 'Please fill out all fields to download the free content.';
+      }
+      else {
+        errorMessage = 'Please enter your ';
+        for (i = 0; i < errors.length; i++) {
+          errorMessage += errors[i];
+          if (i === errors.length - 2) {
+            errorMessage += ', and '
+          }
+          else if (i < errors.length - 1) {
+            errorMessage += ', '
+          }
+          else {
+            errorMessage += '.'
+          }
+        }
+      }
+      document.getElementById('error-message').innerHTML = errorMessage;
+      return false;
+    }
+
+    if (sendEmail != undefined) {
+      if (sendEmail === "sent") {
+        if (typeof s_gi != 'undefined') {
+          var s = s_gi(s_account);
+
+          if ($('.newsletter-signup input:checkbox').is(':checked') && newsletterTracking != "") {
+            s.products = ';{cs.r.ip}-free';
+            s.eVar23 = 'download-{cs.r.ip}-free';
+            s.eVar39 = newsletterTracking;
+            s.events = 'event5,event68';
+            s.linkTrackVars = 'eVar23,eVar39,products,events';
+            s.linkTrackEvents = 'event5,event68';
+            s.tl(this,'o','Download Report');
+          }
+          else {
+            s.products = ';{cs.r.ip}-free';
+            s.eVar23 = 'download-{cs.r.ip}-free';
+            s.events = 'event5';
+            s.linkTrackVars = 'eVar23,products,events';
+            s.linkTrackEvents = 'event5';
+            s.tl(this,'o','Download Report');
+          }
+        }
+        return true;
+      }
+      triggerEmail();
+      return false;
+    }
+  }
+
+  </script>
+</html>
