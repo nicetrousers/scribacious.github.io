@@ -1,1 +1,16 @@
 /* styles to go here */
+body {
+	max-width: 50rem;
+	margin: 40px auto;
+	font: 16px/1.4 Arial, Helvetica, sans-serif;
+}
+h1 {
+	font-size: 200%;
+}
+h2 {
+	font-size: 150%;
+}
+input[type="text"], input[type="email"] {
+	display: block;
+	margin-bottom: 0.5rem;
+}
